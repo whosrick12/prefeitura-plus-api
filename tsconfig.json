@@ -8,8 +8,9 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "outDir": "./dist",
+    "rootDir": "./src",
     "resolveJsonModule": true,
-    "lib": ["ESNext"]
+    "lib": ["ESNext"],
   },
-  "include": ["src"]
+  "include": ["src/**/*"]
 }
