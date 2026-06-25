@@ -68,4 +68,38 @@ export class DenunciaData {
       throw new Error(error.sqlMessage || error.message);
     }
   }
+
+  async postarComentario(denunciaId: number, usuarioId: number, texto: string) {
+    try {
+      const result = await connection("comentarios").insert({
+        denuncia_id: denunciaId,
+        usuario_id: usuarioId,
+        texto: texto
+      });
+      return result[0];
+    } catch (error: any) {
+      throw new Error(error.sqlMessage || error.message);
+    }
+  }
+
+  async confirmarDenuncia(id: number, usuarioId: number) {
+    try {
+      const result = await connection("confirmacoes").insert({
+        denuncia_id: id,
+        usuario_id: usuarioId
+      });
+      return result[0];
+    } catch (error: any) {
+      throw new Error(error.sqlMessage || error.message);
+    }
+  }
+
+  async deletarDenuncia(id: number) {
+    try {
+      await connection("denuncias").where({ id }).delete();
+      return true;
+    } catch (error: any) {
+      throw new Error(error.sqlMessage || error.message);
+    }
+  }
 }
