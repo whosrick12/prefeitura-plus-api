@@ -97,7 +97,11 @@ export class DenunciaBusiness {
       const denuncias = await this.denunciaData.pegarDenuncias();
       const enriched = denuncias.map((d: any) => {
         const prioridade = this.calcularPrioridade(d);
-        return { ...d, prioridade } as Denuncia;
+        return { 
+          ...d, 
+          prioridade,
+          gravidade: Number(d.gravidade || prioridade)
+        } as Denuncia;
       });
       return enriched;
     } catch (error: any) {
@@ -109,10 +113,11 @@ export class DenunciaBusiness {
 
   public async pegarDenunciasOrdenadasPorPrioridade(): Promise<Denuncia[]> {
     const all = await this.pegarDenuncias();
-    return all.sort(
-      (a: Denuncia, b: Denuncia) =>
-        Number(b.prioridade || 0) - Number(a.prioridade || 0)
-    );
+    return all.sort((a: Denuncia, b: Denuncia) => {
+      const gravA = Number(a.gravidade || 0);
+      const gravB = Number(b.gravidade || 0);
+      return gravB - gravA;
+    });
   }
 
   public async pegarDenunciasAnonimas(): Promise<Partial<Denuncia>[]> {

@@ -10,29 +10,34 @@ export type User = {
 };
 
 export type Denuncia = {
-    id:Number;
-    titulo:string;
+    id: Number;
+    titulo: string;
     descricao: string;
     endereco_denuncia: string;
     status: StatusDenuncia;
-    anonimo:boolean;
+    anonimo: boolean;
     usuario_id: Number | null;
     tipo_denuncia_id: Number;
-    prioridade?: Number; // campo calculado automaticamente pelo backend (quanto maior, maior prioridade)
+    prioridade?: Number;
+    gravidade?: Number;
+    local?: string;
+    created_at?: string;
+    updated_at?: string;
+    usuario?: { nome: string };
 }
 
 export type Tipo_Denuncia = {
-    id:Number;
-    nome:string;
-    departamento_id:Number
+    id: Number;
+    nome: string;
+    departamento_id: Number
 }
 
 export type Departamento = {
-    id:Number;
-    nome:string;
-    endereco:string;
-    horario_funcionamento:string;
-    gerente_id:Number;
+    id: Number;
+    nome: string;
+    endereco: string;
+    horario_funcionamento: string;
+    gerente_id: Number;
 }
 
 export type Comentario = {
@@ -50,4 +55,3 @@ export type Confirmacao = {
     usuario_id: Number;
     denuncia_id: Number;
 }
-
