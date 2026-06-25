@@ -2,7 +2,7 @@ import { UsuarioData } from "../data/UsuarioData";
 import { TipoUsuario, User } from "../types/types";
 import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
