@@ -1,4 +1,4 @@
-import { Response, Request, NextFunction } from "express";
+import { Response, Request } from "express";
 import { UsuarioBusiness } from "../business/UsuarioBusiness";
 
 export class UsuarioController {
@@ -8,22 +8,15 @@ export class UsuarioController {
     try {
       const { nome, email, senha } = req.body;
       if (!nome || !email || !senha) {
-        return res
-          .status(400)
-          .send({ error: "Um dos campos não foi inserido!" });
-      } else {
-        const newUser = await this.userBusiness.postarNovoUsuario(
-          nome,
-          email,
-          senha
-        );
-        res.status(201).send(newUser);
+        return res.status(400).json({ error: "Um dos campos não foi inserido!" });
       }
+      const newUser = await this.userBusiness.postarNovoUsuario(nome, email, senha);
+      res.status(201).json(newUser);
     } catch (error: any) {
-      if (error.message.includes("Email já vinculado em um usuário")) {
-        res.status(409).send({ message: error.message });
+      if (error.message.includes("Email já vinculado")) {
+        res.status(409).json({ message: error.message });
       } else {
-        res.status(500).send({ error: error.message });
+        res.status(500).json({ error: error.message });
       }
     }
   };
@@ -32,20 +25,17 @@ export class UsuarioController {
     try {
       const { email, senha } = req.body;
       if (!email || !senha) {
-        return res
-          .status(400)
-          .send({ error: "Um dos campos não foi inserido!" });
+        return res.status(400).json({ error: "Um dos campos não foi inserido!" });
       }
       const token = await this.userBusiness.login(email, senha);
-      res.status(200).send(token);
+      res.status(200).json({ token });
     } catch (error: any) {
-      console.error("ERRO NO LOGIN:", error);
       if (error.message.includes("Email não existe")) {
-        res.status(404).send({ error: error.message });
+        res.status(404).json({ error: error.message });
       } else if (error.message.includes("Senha inválida")) {
-        res.status(401).send({ error: error.message });
+        res.status(401).json({ error: error.message });
       } else {
-        res.status(500).send({ error: error.message });
+        res.status(500).json({ error: error.message });
       }
     }
   };
@@ -54,11 +44,11 @@ export class UsuarioController {
     try {
       const userPayload = (req as any).usuario;
       if (!userPayload) {
-        return res.status(500).send({ error: "Payload não existe!" });
+        return res.status(401).json({ error: "Usuário não autenticado" });
       }
-      res.status(200).send(userPayload);
+      res.status(200).json(userPayload);
     } catch (error: any) {
-      res.status(500).send({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
   };
 }
