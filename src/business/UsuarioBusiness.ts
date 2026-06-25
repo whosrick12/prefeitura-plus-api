@@ -23,12 +23,7 @@ export class UsuarioBusiness {
       }
       const senhaHash = await bcrypt.hash(senha, 10);
       const tipo: TipoUsuario = "cidadao";
-      const newUser = await this.usuarioData.criarUsuarioNoBancoDeDados(
-        nome,
-        email,
-        senhaHash,
-        tipo
-      );
+      const newUser = await this.usuarioData.criarUsuarioNoBancoDeDados(nome, email, senhaHash, tipo);
       return newUser;
     } catch (error: any) {
       throw new Error(error.message || "Erro inesperado");
@@ -38,21 +33,19 @@ export class UsuarioBusiness {
   public async login(email: string, senha: string) {
     try {
       const emailVinculado = await this.usuarioData.pegarUsuarioPeloEmailNoBD(email);
-      if (emailVinculado) {
-        const senhaValida = await bcrypt.compare(senha, emailVinculado.senha_hash);
-        if (senhaValida) {
-          const payload = {
-            id: emailVinculado.id,
-            papel: emailVinculado.papel,
-          };
-          const token = jsonwebtoken.sign(payload, JWT_SECRET);
-          return token;
-        } else {
-          throw new Error("Senha inválida!");
-        }
-      } else {
+      if (!emailVinculado) {
         throw new Error("Email não existe! Por favor crie uma nova conta.");
       }
+      const senhaValida = await bcrypt.compare(senha, emailVinculado.senha_hash);
+      if (!senhaValida) {
+        throw new Error("Senha inválida!");
+      }
+      const payload = {
+        id: emailVinculado.id,
+        papel: emailVinculado.papel,
+      };
+      const token = jsonwebtoken.sign(payload, JWT_SECRET);
+      return token;
     } catch (error: any) {
       throw new Error(error.message || "Erro inesperado");
     }
