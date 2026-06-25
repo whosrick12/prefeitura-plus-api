@@ -11,12 +11,7 @@ export class UsuarioData {
     }
   }
 
-  async criarUsuarioNoBancoDeDados(
-    nome: string,
-    email: string,
-    senha_hash: string,
-    tipo: TipoUsuario
-  ): Promise<Number> {
+  async criarUsuarioNoBancoDeDados(nome: string, email: string, senha_hash: string, tipo: TipoUsuario): Promise<Number> {
     try {
       const result = await connection("usuarios").insert({
         nome: nome,
@@ -24,9 +19,7 @@ export class UsuarioData {
         senha_hash: senha_hash,
         papel: tipo
       });
-      
-      const novoId = result[0];
-      return novoId;
+      return result[0];
     } catch (error: any) {
       throw new Error(error.sqlMessage || error.message);
     }
@@ -43,10 +36,10 @@ export class UsuarioData {
     }
   }
 
-  async pegarUsuarioPeloIdNoBD(userId: Number): Promise<User | undefined> {
+  async pegarUsuarioPeloIdNoBD(id: number): Promise<User | undefined> {
     try {
       const user: User = await connection("usuarios")
-        .where({ id: userId })
+        .where({ id })
         .first();
       return user;
     } catch (error: any) {

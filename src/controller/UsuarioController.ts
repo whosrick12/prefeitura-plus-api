@@ -51,4 +51,24 @@ export class UsuarioController {
       res.status(500).json({ error: error.message });
     }
   };
+
+  public getUsuarioPorId = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const usuario = await this.userBusiness.pegarUsuarioPeloId(Number(id));
+      
+      if (!usuario) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+      
+      res.status(200).json({ 
+        id: usuario.id, 
+        nome: usuario.nome,
+        email: usuario.email,
+        papel: usuario.papel
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
 }
