@@ -1,8 +1,7 @@
 import { UsuarioData } from "../data/UsuarioData";
-import { TipoUsuario, User } from "../types/types";
 import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -16,47 +15,30 @@ export class UsuarioBusiness {
   }
 
   public async postarNovoUsuario(nome: string, email: string, senha: string) {
-    try {
-      const emailVinculado = await this.usuarioData.pegarUsuarioPeloEmailNoBD(email);
-      if (emailVinculado) {
-        throw new Error("Email já vinculado em um usuário");
-      }
-      const senhaHash = await bcrypt.hash(senha, 10);
-      const tipo: TipoUsuario = "cidadao";
-      const newUser = await this.usuarioData.criarUsuarioNoBancoDeDados(nome, email, senhaHash, tipo);
-      return newUser;
-    } catch (error: any) {
-      throw new Error(error.message || "Erro inesperado");
+    const emailVinculado = await this.usuarioData.pegarUsuarioPeloEmailNoBD(email);
+    if (emailVinculado) {
+      throw new Error("Email já vinculado em um usuário");
     }
+    const senhaHash = await bcrypt.hash(senha, 10);
+    const tipo = "cidadao";
+    const newUser = await this.usuarioData.criarUsuarioNoBancoDeDados(nome, email, senhaHash, tipo);
+    return newUser;
   }
 
   public async login(email: string, senha: string) {
-    try {
-      const emailVinculado = await this.usuarioData.pegarUsuarioPeloEmailNoBD(email);
-      if (!emailVinculado) {
-        throw new Error("Email não existe! Por favor crie uma nova conta.");
-      }
-      const senhaValida = await bcrypt.compare(senha, emailVinculado.senha_hash);
-      if (!senhaValida) {
-        throw new Error("Senha inválida!");
-      }
-      const payload = {
-        id: emailVinculado.id,
-        papel: emailVinculado.papel,
-      };
-      const token = jsonwebtoken.sign(payload, JWT_SECRET);
-      return token;
-    } catch (error: any) {
-      throw new Error(error.message || "Erro inesperado");
+    const emailVinculado = await this.usuarioData.pegarUsuarioPeloEmailNoBD(email);
+    if (!emailVinculado) {
+      throw new Error("Email não existe! Por favor crie uma nova conta.");
     }
-  }
-
-  public async pegarUsuarioPeloId(id: number) {
-    try {
-      const usuario = await this.usuarioData.pegarUsuarioPeloIdNoBD(id);
-      return usuario;
-    } catch (error: any) {
-      throw new Error(error.message || "Erro ao buscar usuário");
+    const senhaValida = await bcrypt.compare(senha, emailVinculado.senha_hash);
+    if (!senhaValida) {
+      throw new Error("Senha inválida!");
     }
+    const payload = {
+      id: emailVinculado.id,
+      papel: emailVinculado.papel,
+    };
+    const token = jsonwebtoken.sign(payload, JWT_SECRET);
+    return token;
   }
 }

@@ -1,5 +1,5 @@
-export type TipoUsuario = 'cidadao' | 'funcionario' | 'admin';
-export type StatusDenuncia = 'Pendente' | 'Em análise' | 'Resolvido';
+export type TipoUsuario = 'cidadao' | 'funcionario';
+export type StatusDenuncia = 'Pendente'| 'Em análise'| 'Resolvido';
 
 export type User = {
     id: Number;
@@ -20,6 +20,10 @@ export type Denuncia = {
     tipo_denuncia_id: Number;
     prioridade?: Number;
     gravidade?: Number;
+    local?: string;
+    created_at?: string;
+    updated_at?: string;
+    usuario?: { nome: string };
 }
 
 export type Tipo_Denuncia = {
