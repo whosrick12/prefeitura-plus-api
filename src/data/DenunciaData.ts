@@ -43,6 +43,10 @@ export class DenunciaData {
         titulo: denuncia.titulo,
         descricao: denuncia.descricao,
         local: denuncia.endereco_denuncia || denuncia.local,
+        cidade: denuncia.cidade || null,
+        bairro: denuncia.bairro || null,
+        rua: denuncia.rua || null,
+        numero: denuncia.numero || null,
         status: denuncia.status || "pendente",
         gravidade: denuncia.gravidade || 1,
         usuario_id: denuncia.usuario_id || null,
@@ -50,11 +54,10 @@ export class DenunciaData {
         departamento_id: denuncia.departamento_id || null,
         latitude: denuncia.latitude || null,
         longitude: denuncia.longitude || null,
-        imagem_url: denuncia.imagem_url || null
+        imagem_url: denuncia.imagem_url || null,
+        anonimo: denuncia.anonimo === true
       });
-      
-      const id = result[0];
-      return id;
+      return result[0];
     } catch (error: any) {
       throw new Error(error.sqlMessage || error.message);
     }
@@ -69,12 +72,11 @@ export class DenunciaData {
     }
   }
 
-  async postarComentario(denunciaId: number, usuarioId: number, texto: string) {
+  async confirmarDenuncia(id: number, usuarioId: number) {
     try {
-      const result = await connection("comentarios").insert({
-        denuncia_id: denunciaId,
-        usuario_id: usuarioId,
-        texto: texto
+      const result = await connection("confirmacoes").insert({
+        denuncia_id: id,
+        usuario_id: usuarioId
       });
       return result[0];
     } catch (error: any) {
@@ -82,11 +84,12 @@ export class DenunciaData {
     }
   }
 
-  async confirmarDenuncia(id: number, usuarioId: number) {
+  async postarComentario(denunciaId: number, usuarioId: number, texto: string) {
     try {
-      const result = await connection("confirmacoes").insert({
-        denuncia_id: id,
-        usuario_id: usuarioId
+      const result = await connection("comentarios").insert({
+        denuncia_id: denunciaId,
+        usuario_id: usuarioId,
+        texto: texto
       });
       return result[0];
     } catch (error: any) {
