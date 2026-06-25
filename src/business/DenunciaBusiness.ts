@@ -196,6 +196,19 @@ export class DenunciaBusiness {
       throw new Error(error.message || "Erro ao adicionar comentário");
     }
   }
+  public async atualizarStatus(id: number, status: string) {
+  try {
+    const denuncia = await this.denunciaData.pegarDenunciaPorId(id);
+    if (!denuncia) {
+      throw new Error("Denúncia não encontrada");
+    }
+    
+    const resultado = await this.denunciaData.atualizarStatus(id, status);
+    return { id, status, mensagem: "Status atualizado com sucesso" };
+  } catch (error: any) {
+    throw new Error(error.message || "Erro ao atualizar status");
+  }
+}
 
   public async criarDenuncia(
     denunciaInput: any,

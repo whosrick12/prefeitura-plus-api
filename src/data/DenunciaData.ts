@@ -93,6 +93,19 @@ export class DenunciaData {
       throw new Error(error.sqlMessage || error.message);
     }
   }
+  async atualizarStatus(id: number, status: string) {
+  try {
+    await connection("denuncias")
+      .where({ id })
+      .update({ 
+        status: status,
+        updated_at: new Date()
+      });
+    return true;
+  } catch (error: any) {
+    throw new Error(error.sqlMessage || error.message);
+  }
+}
 
   async deletarDenuncia(id: number) {
     try {

@@ -17,6 +17,21 @@ export class DenunciaController {
       res.status(500).send({ error: error.message });
     }
   };
+  public atualizarStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    if (!status) {
+      return res.status(400).json({ error: "Status é obrigatório" });
+    }
+    
+    const resultado = await this.denunciaBusiness.atualizarStatus(Number(id), status);
+    res.status(200).json(resultado);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
   // Postar comentário em uma denúncia (usuário autenticado)
   public postarComentario = async (req: Request, res: Response) => {

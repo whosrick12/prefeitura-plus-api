@@ -44,5 +44,7 @@ denunciaRouter.post("/:id/comentarios",
     checkLogin, // Exige login para comentar (evita spam anônimo).
     denunciaController.postarComentario);
 
+    denunciaRouter.patch("/:id/status", checkLogin, checkAdmin, denunciaController.atualizarStatus);
+
 
 
