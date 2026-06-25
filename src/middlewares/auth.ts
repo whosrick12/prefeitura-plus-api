@@ -1,41 +1,48 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, Request, NextFunction } from "express";
 import jsonwebtoken from "jsonwebtoken";
+import dotenv from "dotenv";
 
-const JWT_SECRET = process.env.JWT_KEY || "RicardoSAlmeida";
+dotenv.config();
+
+const chaveSecreta = process.env.JWT_KEY || "RicardoSAlmeida";
 
 export const checkLogin = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).send({ error: "Token não encontrado" });
-    }
+    try {
+        const authheader = req.headers.authorization;
 
-    const token = authHeader.split(" ")[1];
-    if (!token) {
-      return res.status(401).send({ error: "Token inválido" });
-    }
+        if (!authheader) {
+            return res.status(401).send({ error: "token não fornecido" });
+        }
 
-    const decoded = jsonwebtoken.verify(token, JWT_SECRET);
-    (req as any).usuario = decoded;
-    next();
-  } catch (error) {
-    return res.status(401).send({ error: "Token inválido" });
-  }
-};
+        const partes = authheader.split(" ");
+
+        if (partes.length !== 2) {
+            return res.status(401).send({ error: "token mal formado" });
+        }
+
+        const token = partes[1];
+
+        const payload = jsonwebtoken.verify(token, chaveSecreta);
+
+        (req as any).usuario = payload;
+
+        next();
+
+    } catch (error: any) {
+        res.status(401).send({ error: "Token inválido ou expirado" });
+    }
+}
 
 export const checkAdmin = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const usuario = (req as any).usuario;
-    if (!usuario) {
-      return res.status(401).send({ error: "Usuário não autenticado" });
+    const usuarioPayLoad = (req as any).usuario;
+
+    if (!usuarioPayLoad) {
+        return res.status(401).send({ error: "usuario não encontrado" });
     }
 
-    if (usuario.papel !== "admin" && usuario.papel !== "funcionario") {
-      return res.status(403).send({ error: "Acesso negado. Apenas administradores podem acessar." });
+    if (usuarioPayLoad.papel !== 'funcionario' && usuarioPayLoad.papel !== 'admin') {
+        return res.status(403).send({ error: "Acesso negado. Rota restrita a funcionários." });
     }
 
     next();
-  } catch (error) {
-    return res.status(500).send({ error: "Erro ao verificar permissões" });
-  }
-};
+}
